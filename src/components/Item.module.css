@@ -1,0 +1,22 @@
+item {
+  display: block;
+  margin: 1rem;
+  background-color: var(--colour);
+  border-radius: .5rem;
+}
+
+stamp {
+  width: 8rem;
+  float: right;
+  padding-top: .5rem;
+}
+
+tags {
+  display: inline-block;
+  transform: translate(-0.4rem, -0.2rem);
+}
+
+content {
+  display: block;
+  padding: 0.5rem;
+}

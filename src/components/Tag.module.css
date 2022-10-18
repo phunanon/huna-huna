@@ -1,0 +1,10 @@
+tag {
+  display: inline-block;
+  padding: 0.25rem;
+  margin: 0 0.1rem;
+  border-radius: 0.1rem;
+  background-color: var(--colour);
+  color: #000;
+  min-width: 1.75rem;
+  text-align: center;
+}

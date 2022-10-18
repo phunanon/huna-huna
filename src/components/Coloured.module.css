@@ -1,0 +1,3 @@
+coloured > * {
+  background-color: var(--colour);
+}
