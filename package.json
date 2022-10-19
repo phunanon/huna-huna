@@ -12,15 +12,20 @@
     "vite": "^3.1.0"
   },
   "dependencies": {
+    "@isomorphic-git/lightning-fs": "^4.6.0",
+    "@octokit/rest": "^19.0.5",
     "@solidjs/meta": "^0.28.0",
     "@solidjs/router": "^0.5.0",
     "@types/lodash": "^4.14.186",
     "@types/pretty-ms": "^5.0.1",
+    "classnames": "^2.3.2",
+    "isomorphic-git": "^1.21.0",
     "lodash": "^4.17.21",
     "pretty-ms": "^8.0.0",
     "solid-element": "^1.5.7",
     "solid-js": "^1.5.7",
     "solid-start": "^0.1.0",
+    "stream-browserify": "^3.0.0",
     "undici": "^5.10.0"
   },
   "engines": {

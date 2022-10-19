@@ -1,8 +1,10 @@
-import { createSignal, For } from 'solid-js';
-import _, { orderBy, filter, sumBy, lowerCase } from 'lodash';
+import { createEffect, createSignal, For } from 'solid-js';
+import { orderBy, filter, sumBy, lowerCase, zipObject, reject } from 'lodash';
 import styles from './App.module.css';
 import Item from './Item';
 import { TranscriptItem } from '~/types';
+import { downloadTranscript, uploadTranscript } from '~/Transcript';
+import { extractTags } from '~/Transcript';
 
 declare module 'solid-js' {
   export namespace JSX {
@@ -12,46 +14,12 @@ declare module 'solid-js' {
   }
 }
 
-const actions = ['Add', 'Remove'];
-
-const transcript: TranscriptItem[] = [
-  {
-    tags: ['milestone', 'household', 'humidity'],
-    timestamp: 1665550000000,
-    content:
-      'Began using dehumidifier less due to power consumption reaching over 4kWh each day.',
-  },
-  {
-    tags: ['meal', 'household'],
-    timestamp: 1665685000000,
-    content: 'Mushroom stir-fry! Such a wonderful woman my wife is.',
-  },
-  {
-    tags: ['meal', 'household'],
-    timestamp: 1665870000000,
-    content: 'Made apple crumble. Wifey didn\'t like the sourness of the apple.',
-  },
-  {
-    tags: ['household', 'humidity'],
-    timestamp: 1665700000000,
-    content:
-      'Tried the dehumidifier on the stool, on the countertop. Was just a nuisance.',
-  },
-  {
-    tags: ['YouTube', 'learning', 'survival'],
-    timestamp: 1665796000000,
-    content:
-      'Watched a video about stealth camping. Snugpak is a tiny tent which looks nice.',
-  },
-];
-
 const numIntersections = (content: string[], queries: string[]) =>
   sumBy(content, x => sumBy(queries, y => Number(x.includes(y))));
 
 function filterAndSortItems(query: string, transcript: TranscriptItem[]) {
-  type WeightedItem = TranscriptItem & { weight: number };
   if (query) {
-    const orGroup = (transcript: WeightedItem[], query: string) => {
+    const orGroup = (transcript: TranscriptItem[], query: string) => {
       const queries = lowerCase(query.trim()).split(' ');
       if (!queries[0]) {
         return transcript;
@@ -63,30 +31,69 @@ function filterAndSortItems(query: string, transcript: TranscriptItem[]) {
         return { ...item, weight };
       });
       const filtered = filter(weighed, x => x.weight > 0);
-      return orderBy(filtered, 'timestamp', 'desc');
+      return orderBy(filtered as TranscriptItem[], 'timestamp', 'desc');
     };
     return query.split('&').reduce(orGroup, transcript);
   }
   return orderBy(transcript, 'timestamp', 'desc');
 }
 
-function filterAndSortTags(query: string, transcript: TranscriptItem[]) {
-  const tags = new Set(_.uniqBy(transcript, 'tags').flatMap(x => x.tags));
-  const filtered = filter(Array.from(tags), x => x.includes(query));
-  return orderBy(filtered, ['asc']);
-}
-
 export default function App() {
   const [query, setQuery] = createSignal('');
+  const [transcript, setTranscript] = createSignal<TranscriptItem[]>([]);
 
-  const filteredTranscript = () => filterAndSortItems(query(), transcript);
-  const filteredTags = () => filterAndSortTags(query(), transcript);
+  createEffect(async () => {
+    const response = await downloadTranscript();
+    if ('error' in response) {
+      console.error(response.error);
+      return;
+    }
+    setTranscript(response.transcript);
+  });
+
+  const filteredTranscript = () => filterAndSortItems(query(), transcript());
+
+  const handleCommit = (timestamp?: number) => {
+    return (content: string) => {
+      timestamp ??= Date.now() - 1100;
+      const current = transcript();
+      const time2item = zipObject(
+        current.map(x => x.timestamp),
+        current,
+      );
+      time2item[timestamp] = { timestamp, content, tags: extractTags(content) };
+      const newTranscript = Object.values(time2item);
+      setTranscript(newTranscript);
+      uploadTranscript(newTranscript);
+    };
+  };
+
+  const handleDelete = (timestamp: number) => () => {
+    const newTranscript = reject(transcript(), { timestamp });
+    setTranscript(newTranscript);
+    uploadTranscript(newTranscript);
+  };
 
   return (
     <app class={styles.app}>
       <input value={query()} oninput={e => setQuery(e.currentTarget.value)} />
       <transcript>
-        <For each={filteredTranscript()}>{item => <Item {...item} />}</For>
+        {!query() && (
+          <Item
+            content=""
+            tags={[]}
+            onCommit={handleCommit()}
+          />
+        )}
+        <For each={filteredTranscript()}>
+          {item => (
+            <Item
+              {...item}
+              onCommit={handleCommit(item.timestamp)}
+              onDelete={handleDelete(item.timestamp)}
+            />
+          )}
+        </For>
       </transcript>
     </app>
   );

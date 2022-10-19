@@ -1,3 +1,13 @@
 coloured > * {
   background-color: var(--colour);
 }
+
+coloured.gradient > * {
+  background: linear-gradient(
+    90deg,
+    var(--colour) 0%,
+    transparent 20%,
+    transparent 80%,
+    var(--colour) 100%
+  );
+}

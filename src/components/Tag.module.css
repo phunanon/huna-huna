@@ -3,8 +3,13 @@ tag {
   padding: 0.25rem;
   margin: 0 0.1rem;
   border-radius: 0.1rem;
-  background-color: var(--colour);
-  color: #000;
+  color: #eee;
   min-width: 1.75rem;
   text-align: center;
+  line-height: 1.25rem;
+  user-select: none;
+}
+
+tag.clickable {
+  cursor: pointer;
 }
