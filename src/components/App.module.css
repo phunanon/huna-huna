@@ -1,8 +1,3 @@
-options {
-  display: block;
-  height: 20vh;
-}
-
 input {
   display: block;
   width: 100%;
@@ -14,32 +9,4 @@ input {
 
 input:focus {
   outline: none;
-}
-
-options {
-  display: flex;
-}
-
-option {
-  display: block;
-  padding: .5rem;
-}
-
-column {
-  flex: auto;
-  height: 100%;
-  vertical-align: top;
-}
-
-.actions {
-  background-color: rgba(255, 127, 127, 0.1);
-}
-
-.tags {
-  background-color: rgba(127, 255, 127, 0.1);
-}
-
-.actions action {
-  display: block;
-  padding: 0.5rem;
 }

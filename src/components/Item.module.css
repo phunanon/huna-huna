@@ -1,12 +1,11 @@
 item {
   position: relative;
   display: block;
-  margin: 1rem;
-  border-radius: 0.5rem;
+  margin-left: 1px;
 }
 
 stamp {
-  width: 8rem;
+  width: 6rem;
   float: right;
   padding-top: 0.5rem;
   color: #aaa;
@@ -14,7 +13,6 @@ stamp {
 
 tags {
   display: inline-block;
-  transform: translate(-0.4rem, -0.2rem);
   height: 1.25rem;
 }
 

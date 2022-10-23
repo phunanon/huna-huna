@@ -2,6 +2,7 @@
   "name": "huna-huna",
   "scripts": {
     "dev": "solid-start dev",
+    "host": "solid-start dev --host --port 3333",
     "build": "solid-start build",
     "start": "solid-start start"
   },

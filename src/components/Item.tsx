@@ -1,5 +1,5 @@
 import { countBy } from 'lodash';
-import ms from 'pretty-ms';
+import prettyMs from 'pretty-ms';
 import { createSignal, For, splitProps } from 'solid-js';
 import { tagRegex } from '~/Transcript';
 import { TranscriptItem } from '~/types';
@@ -24,7 +24,7 @@ export default function Item(props: ItemProps) {
 
   const handleCommit = () => {
     const txt = text();
-    txt !== p.content && c.onCommit(txt.replaceAll(/\n+/g, '\n').trim());
+    txt !== p.content && c.onCommit(txt.replaceAll(/-{5,}/g, '---- ').trim());
     setText('');
   };
 
@@ -41,12 +41,13 @@ export default function Item(props: ItemProps) {
   const editButtons = () =>
     editing() && (
       <>
-        <Tag onClick={handleCommit} tag="🖫" />
+        <Tag onClick={handleCommit} tag="💾" />
         <Tag onClick={() => setText(p.content)} tag="↩" />
       </>
     );
 
-  const value = () => (revealTags() ? text() : text().replace(tagRegex, ''));
+  const value = () =>
+    revealTags() ? text() : text().replace(tagRegex, '').trim();
   const rows = () => countBy(value())['\n'] || 1;
 
   return (
@@ -69,10 +70,17 @@ export default function Item(props: ItemProps) {
           onInput={e => setText(e.currentTarget.value ?? p.content)}
           onFocus={e => setRevealTags(true)}
           onBlur={e => setRevealTags(false)}
-          rows={rows()}
+          rows={rows() + 1}
           value={value()}
         />
       </item>
     </Coloured>
   );
+}
+
+function ms(...[n, options]: Parameters<typeof prettyMs>) {
+  return prettyMs(n, options)
+    .replace('second', 'sec')
+    .replace('minute', 'min')
+    .replace('hour', 'hr');
 }

@@ -1,7 +1,7 @@
 import { TranscriptItem } from './types';
 import { Octokit } from '@octokit/rest';
 
-export const tagRegex = /#([a-z0-9]+)/gi;
+export const tagRegex = /(?:^|\s)#([^\s]+)/gi;
 export const extractTags = (content: string) =>
   [...content.matchAll(tagRegex)].map(m => m[1]);
 
@@ -25,7 +25,7 @@ export async function downloadTranscript(): Promise<Transcript> {
 
   const transcript: TranscriptItem[] = [];
 
-  const items = content.trim().split('\n\n');
+  const items = content.trim().split('\n-----\n');
   items.forEach(item => {
     const [timestamp, ...lines] = item.trim().split('\n');
     if (!timestamp) {
@@ -47,8 +47,8 @@ export async function uploadTranscript(
   });
 
   const content = transcript
-    .map(item => `${item.timestamp}\n${item.content}\n\n`)
-    .join('');
+    .map(item => `${item.timestamp}\n${item.content}`)
+    .join('\n-----\n');
 
   await octokit.request('PATCH /gists/{gist_id}', {
     gist_id,

@@ -11,6 +11,7 @@ export default function Root() {
         <Title>Huna-Huna</Title>
         <Meta charset="utf-8" />
         <Meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png" />
       </Head>
       <Body>
         <Suspense>
