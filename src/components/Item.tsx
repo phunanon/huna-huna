@@ -1,7 +1,6 @@
 import { countBy } from 'lodash-es';
 import prettyMs from 'pretty-ms';
 import { createSignal, For, splitProps } from 'solid-js';
-import { tagRegex } from '../Transcript';
 import type { TranscriptItem } from '../Transcript';
 import Coloured from './Coloured';
 import './Item.module.css';
@@ -46,6 +45,7 @@ export default function Item(props: ItemProps) {
       </>
     );
 
+  const tagRegex = /^(#([^\s]+)\s*)+/gm;
   const value = () =>
     revealTags() ? text() : text().replace(tagRegex, '').trim();
   const rows = () => countBy(value())['\n'] || 1;
