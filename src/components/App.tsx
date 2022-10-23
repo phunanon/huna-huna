@@ -1,6 +1,5 @@
 import { createEffect, createSignal, For } from 'solid-js';
-import { orderBy, filter, sumBy, lowerCase, reject } from 'lodash-es';
-import { zipObject } from 'lodash-es';
+import { orderBy, filter, sumBy, reject, toLower, zipObject } from 'lodash-es';
 import styles from './App.module.css';
 import Item from './Item';
 import type { TranscriptItem } from '../Transcript';
@@ -22,14 +21,14 @@ const numIntersections = (content: string[], queries: string[]) =>
 function filterAndSortItems(query: string, transcript: TranscriptItem[]) {
   if (query) {
     const orGroup = (transcript: TranscriptItem[], query: string) => {
-      const queries = lowerCase(query.trim()).split(' ');
+      const queries = toLower(query.trim()).split(' ');
       if (!queries[0]) {
         return transcript;
       }
       const weighed = transcript.map(item => {
         const weight =
-          numIntersections(item.tags.map(lowerCase), queries) +
-          numIntersections(lowerCase(item.content).split(' '), queries);
+          numIntersections(item.tags.map(toLower), queries) +
+          numIntersections(toLower(item.content).split(' '), queries);
         return { ...item, weight };
       });
       const filtered = filter(weighed, x => x.weight > 0);
