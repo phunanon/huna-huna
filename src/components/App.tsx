@@ -1,10 +1,19 @@
 import { createEffect, createSignal, For } from 'solid-js';
-import { orderBy, filter, sumBy, lowerCase, zipObject, reject } from 'lodash';
+import {
+  orderBy,
+  filter,
+  sumBy,
+  lowerCase,
+  zipObject,
+  reject,
+  every,
+} from 'lodash';
 import styles from './App.module.css';
 import Item from './Item';
 import { TranscriptItem } from '~/types';
-import { downloadTranscript, uploadTranscript } from '~/Transcript';
+import { downloadTranscript, Settings, uploadTranscript } from '~/Transcript';
 import { extractTags } from '~/Transcript';
+import { createStoredSignal } from '~/hooks/createStoredSignal';
 
 declare module 'solid-js' {
   export namespace JSX {
@@ -39,11 +48,26 @@ function filterAndSortItems(query: string, transcript: TranscriptItem[]) {
 }
 
 export default function App() {
+  const [settings, setSettings] = createStoredSignal<Settings>('settings');
   const [query, setQuery] = createSignal('');
   const [transcript, setTranscript] = createSignal<TranscriptItem[]>([]);
 
+  //Consume settings
+  createEffect(() => {
+    const config = query().split(':');
+    if (config.length === 2 && every(config, x => x.length >= 32)) {
+      setSettings({ auth: config[0], gist_id: config[1] });
+      setQuery('');
+    }
+  });
+
+  //Download transcript
   createEffect(async () => {
-    const response = await downloadTranscript();
+    const config = settings();
+    if (!config) {
+      return;
+    }
+    const response = await downloadTranscript(config);
     if ('error' in response) {
       console.error(response.error);
       return;
@@ -55,6 +79,10 @@ export default function App() {
 
   const handleCommit = (timestamp?: number) => {
     return (content: string) => {
+      const config = settings();
+      if (!config) {
+        return;
+      }
       timestamp ??= Date.now() - 1100;
       const current = transcript();
       const time2item = zipObject(
@@ -64,27 +92,29 @@ export default function App() {
       time2item[timestamp] = { timestamp, content, tags: extractTags(content) };
       const newTranscript = Object.values(time2item);
       setTranscript(newTranscript);
-      uploadTranscript(newTranscript);
+      uploadTranscript(config, newTranscript);
     };
   };
 
   const handleDelete = (timestamp: number) => () => {
+    const config = settings();
+    if (!config) {
+      return;
+    }
     const newTranscript = reject(transcript(), { timestamp });
     setTranscript(newTranscript);
-    uploadTranscript(newTranscript);
+    uploadTranscript(config, newTranscript);
   };
 
   return (
     <app class={styles.app}>
-      <input value={query()} oninput={e => setQuery(e.currentTarget.value)} />
+      <input
+        value={query()}
+        oninput={e => setQuery(e.currentTarget.value)}
+        placeholder={!settings() ? 'Enter AuthToken:GistID' : ''}
+      />
       <transcript>
-        {!query() && (
-          <Item
-            content=""
-            tags={[]}
-            onCommit={handleCommit()}
-          />
-        )}
+        {!query() && <Item content="" tags={[]} onCommit={handleCommit()} />}
         <For each={filteredTranscript()}>
           {item => (
             <Item
