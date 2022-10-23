@@ -1,35 +1,30 @@
 {
   "name": "huna-huna",
-  "scripts": {
-    "dev": "solid-start dev",
-    "host": "solid-start dev --host --port 3333",
-    "build": "solid-start build",
-    "start": "solid-start start"
-  },
   "type": "module",
-  "devDependencies": {
-    "solid-start-node": "^0.1.0",
-    "typescript": "^4.8.3",
-    "vite": "^3.1.0"
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
-    "@isomorphic-git/lightning-fs": "^4.6.0",
+    "@astrojs/solid-js": "^1.2.1",
     "@octokit/rest": "^19.0.5",
-    "@solidjs/meta": "^0.28.0",
-    "@solidjs/router": "^0.5.0",
-    "@types/lodash": "^4.14.186",
+    "@types/lodash-es": "^4.17.6",
     "@types/pretty-ms": "^5.0.1",
+    "astro": "^1.5.2",
     "classnames": "^2.3.2",
-    "isomorphic-git": "^1.21.0",
-    "lodash": "^4.17.21",
+    "fetch-ponyfill": "^7.1.0",
+    "lodash-es": "^4.17.21",
     "pretty-ms": "^8.0.0",
-    "solid-element": "^1.5.7",
-    "solid-js": "^1.5.7",
-    "solid-start": "^0.1.0",
-    "stream-browserify": "^3.0.0",
-    "undici": "^5.10.0"
+    "solid-js": "^1.4.3",
+    "stream-browserify": "^3.0.0"
   },
-  "engines": {
-    "node": ">=16"
+  "devDependencies": {
+    "gh-pages": "^4.0.0"
   }
 }

@@ -1,8 +1,8 @@
-import { countBy } from 'lodash';
+import { countBy } from 'lodash-es';
 import prettyMs from 'pretty-ms';
 import { createSignal, For, splitProps } from 'solid-js';
-import { tagRegex } from '~/Transcript';
-import { TranscriptItem } from '~/types';
+import { tagRegex } from '../Transcript';
+import type { TranscriptItem } from '../Transcript';
 import Coloured from './Coloured';
 import './Item.module.css';
 import Tag from './Tag';
@@ -68,8 +68,8 @@ export default function Item(props: ItemProps) {
         )}
         <textarea
           onInput={e => setText(e.currentTarget.value ?? p.content)}
-          onFocus={e => setRevealTags(true)}
-          onBlur={e => setRevealTags(false)}
+          onFocus={() => setRevealTags(true)}
+          onBlur={() => setRevealTags(false)}
           rows={rows() + 1}
           value={value()}
         />

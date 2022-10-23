@@ -1,11 +1,21 @@
-import { TranscriptItem } from './types';
 import { Octokit } from '@octokit/rest';
 
-export const tagRegex = /(?:^|\s)#([^\s]+)/gi;
-export const extractTags = (content: string) =>
-  [...content.matchAll(tagRegex)].map(m => m[1]);
+export type TranscriptItem = {
+  tags: string[];
+  timestamp: number;
+  content: string;
+};
 
 export type Settings = { auth: string; gist_id: string };
+
+export const tagRegex = /(?:^|\s)#([^\s]+)/gi;
+export const extractTags = (content: string) => {
+  const tags: string[] = [];
+  [...content.matchAll(tagRegex)].forEach(([_, tag]) => {
+    if (tag) tags.push(tag);
+  });
+  return tags;
+};
 
 type Transcript = { error: string } | { transcript: TranscriptItem[] };
 export async function downloadTranscript({
@@ -33,7 +43,7 @@ export async function downloadTranscript({
       return;
     }
     const content = lines.join('\n');
-    const tags = extractTags(content);
+    const tags = extractTags(content) ?? [];
     transcript.push({ timestamp: Number(timestamp), content, tags });
   });
 

@@ -1,19 +1,12 @@
 import { createEffect, createSignal, For } from 'solid-js';
-import {
-  orderBy,
-  filter,
-  sumBy,
-  lowerCase,
-  zipObject,
-  reject,
-  every,
-} from 'lodash';
+import { orderBy, filter, sumBy, lowerCase, reject } from 'lodash-es';
+import { zipObject } from 'lodash-es';
 import styles from './App.module.css';
 import Item from './Item';
-import { TranscriptItem } from '~/types';
-import { downloadTranscript, Settings, uploadTranscript } from '~/Transcript';
-import { extractTags } from '~/Transcript';
-import { createStoredSignal } from '~/hooks/createStoredSignal';
+import type { TranscriptItem } from '../Transcript';
+import { downloadTranscript, Settings, uploadTranscript } from '../Transcript';
+import { extractTags } from '../Transcript';
+import { createStoredSignal } from '../hooks/createStoredSignal';
 
 declare module 'solid-js' {
   export namespace JSX {
@@ -54,9 +47,9 @@ export default function App() {
 
   //Consume settings
   createEffect(() => {
-    const config = query().split(':');
-    if (config.length === 2 && every(config, x => x.length >= 32)) {
-      setSettings({ auth: config[0], gist_id: config[1] });
+    const [auth, gist_id] = query().split(':');
+    if (auth && auth.length > 32 && gist_id?.length === 32) {
+      setSettings({ auth, gist_id });
       setQuery('');
     }
   });
