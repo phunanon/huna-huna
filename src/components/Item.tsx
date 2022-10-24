@@ -61,7 +61,12 @@ export default function Item(props: ItemProps) {
           <For each={[...p.tags].sort()}>{x => <Tag tag={x} />}</For>
         </tags>
         {p.timestamp && (
-          <stamp>
+          <stamp
+            title={new Date(p.timestamp).toLocaleString([], {
+              dateStyle: 'full',
+              timeStyle: 'full',
+            })}
+          >
             {ms(-(p.timestamp - timeNow()), { verbose: true, compact: true })}{' '}
             ago
           </stamp>
