@@ -3,8 +3,8 @@ import prettyMs from 'pretty-ms';
 import { createSignal, For, splitProps } from 'solid-js';
 import type { TranscriptItem } from '../Transcript';
 import Coloured from './Coloured';
-import './Item.module.css';
 import Tag from './Tag';
+import './Item.module.css';
 
 export type ItemProps = Omit<TranscriptItem, 'timestamp'> & {
   timestamp?: number;
