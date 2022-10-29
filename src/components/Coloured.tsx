@@ -18,7 +18,7 @@ export default function Coloured(props: ColouredProps) {
   return (
     <coloured
       style={`--colour: ${pastel(p.colourBy, p.lux, p.alpha)};`}
-      classList={{ [styles.gradient]: p.gradient }}
+      classList={{ [styles.gradient!]: p.gradient }}
       {...rest}
     >
       {props.children}

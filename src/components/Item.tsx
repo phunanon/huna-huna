@@ -45,9 +45,9 @@ export default function Item(props: ItemProps) {
       </>
     );
 
-  const tagRegex = /^(#([^\s]+)\s*)+/gm;
+  const tagsRegex = /^(#([^\s]+)\s*)+/gm;
   const value = () =>
-    revealTags() ? text() : text().replace(tagRegex, '').trim();
+    revealTags() ? text() : text().replace(tagsRegex, '').trim();
   const rows = () => countBy(value())['\n'] || 1;
 
   return (
