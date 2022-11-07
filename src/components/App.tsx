@@ -43,6 +43,7 @@ export default function App() {
   const [settings, setSettings] = createStoredSignal<Settings>('settings');
   const [query, setQuery] = createSignal('');
   const [transcript, setTranscript] = createSignal<TranscriptItem[]>([]);
+  const [lastTimestamp, setLastTimestamp] = createSignal(0);
 
   //Consume settings
   createEffect(() => {
@@ -56,15 +57,14 @@ export default function App() {
   //Download transcript
   createEffect(async () => {
     const config = settings();
-    if (!config) {
-      return;
-    }
+    if (!config) return;
     const response = await downloadTranscript(config);
     if ('error' in response) {
       console.error(response.error);
       return;
     }
     setTranscript(response.transcript);
+    setLastTimestamp(Date.now());
   });
 
   const filteredTranscript = () => filterAndSortItems(query(), transcript());
@@ -85,18 +85,31 @@ export default function App() {
       const newTranscript = Object.values(time2item);
       setTranscript(newTranscript);
       uploadTranscript(config, newTranscript);
+      setLastTimestamp(timestamp);
     };
   };
 
   const handleDelete = (timestamp: number) => () => {
     const config = settings();
-    if (!config) {
-      return;
-    }
+    if (!config) return;
     const newTranscript = reject(transcript(), { timestamp });
     setTranscript(newTranscript);
     uploadTranscript(config, newTranscript);
+    setLastTimestamp(timestamp);
   };
+
+  //Staleness check
+  const checkMs = 15_000;
+  const staleAfterMs = 60_000 * 60;
+  setInterval(() => {
+    const config = settings();
+    if (!config) return;
+    const timestamp = Date.now();
+    const diff = timestamp - lastTimestamp();
+    if (diff > staleAfterMs && !document.hidden) {
+      alert("I'm stale! Please refresh.");
+    }
+  }, checkMs);
 
   return (
     <app class={styles.app}>

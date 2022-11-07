@@ -8,7 +8,7 @@ export type TranscriptItem = {
 
 export type Settings = { auth: string; gist_id: string };
 
-export const tagRegex = /(?:^|\s)#([^\s:.]+)/gi;
+export const tagRegex = /(?:^|\s)#([^\s:."']+)/gi;
 export const extractTags = (content: string) => {
   const tags: string[] = [];
   [...content.matchAll(tagRegex)].forEach(([_, tag]) => {
